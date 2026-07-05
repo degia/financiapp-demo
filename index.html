@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financia — Kelola Keuangan Pribadi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ===================== TOKENS ===================== */
+        :root {
+            --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+
+            /* light theme */
+            --bg: #f6ecd2;
+            --bg-soft: #faf4e3;
+            --header-bg: #fffdf6;
+            --card-bg: #ffffff;
+            --card-border: #ecdfbc;
+            --text: #232323;
+            --text-muted: #7a7466;
+            --text-faint: #a89f8c;
+            --accent-navy: #141a2e;
+            --accent-navy-2: #1c2440;
+            --accent-gold: #f0c968;
+            --accent-gold-dark: #d9a93a;
+            --accent-blue: #1d4ed8;
+            --green: #16a34a;
+            --red: #dc2626;
+            --title-bar-bg: transparent;
+            --title-bar-text: var(--text);
+            --input-bg: #ffffff;
+            --input-border: #e3d9bc;
+            --shadow: 0 2px 10px rgba(60, 45, 10, 0.06);
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0a0e1c;
+            --bg-soft: #0d1224;
+            --header-bg: #0c1122;
+            --card-bg: linear-gradient(150deg, #3c3468, #28345f 60%, #232c52);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text: #eef0fb;
+            --text-muted: #a7abd1;
+            --text-faint: #7c81ab;
+            --accent-navy: #ffffff;
+            --accent-navy-2: #e9ecff;
+            --accent-gold: #f0c968;
+            --accent-gold-dark: #d9a93a;
+            --accent-blue: #3b6fe0;
+            --green: #4ade80;
+            --red: #f87171;
+            --title-bar-bg: linear-gradient(90deg, #12306b, #1b3f86);
+            --title-bar-text: #ffffff;
+            --input-bg: #1b2242;
+            --input-border: #333e6b;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-display);
+            background: var(--bg);
+            color: var(--text);
+            transition: background .25s ease, color .25s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .mono {
+            font-family: var(--font-mono);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ===================== SCROLLBAR / FOCUS ===================== */
+        :focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        /* ===================== TOP NAV (APP) ===================== */
+        .app-header {
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            height: 60px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 800;
+            font-size: 17px;
+            letter-spacing: -0.02em;
+        }
+
+        .brand svg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .brand .brand-name {
+            display: none;
+        }
+
+        .app-nav {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex-wrap: wrap;
+        }
+
+        .app-nav a {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+            transition: color .15s;
+            white-space: nowrap;
+        }
+
+        .app-nav a:hover {
+            color: var(--text);
+        }
+
+        .app-nav a.active {
+            color: var(--text);
+        }
+
+        .app-nav a.active::after {
+            content: '';
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: -1px;
+            height: 2px;
+            background: var(--accent-gold-dark);
+            border-radius: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+        }
+
+        html[data-theme="dark"] .icon-btn {
+            background: #141a34;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--card-bg);
+        }
+
+        html[data-theme="dark"] .user-pill {
+            background: #141a34;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            right: 0;
+            top: 44px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            min-width: 150px;
+            padding: 6px;
+            z-index: 60;
+        }
+
+        html[data-theme="dark"] .user-dropdown {
+            background: #171d3c;
+        }
+
+        .user-dropdown a,
+        .user-dropdown button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            color: var(--text);
+            padding: 9px 10px;
+            border-radius: 7px;
+            font-size: 13.5px;
+            font-weight: 500;
+        }
+
+        .user-dropdown a:hover,
+        .user-dropdown button:hover {
+            background: var(--bg-soft);
+        }
+
+        html[data-theme="dark"] .user-dropdown a:hover,
+        html[data-theme="dark"] .user-dropdown button:hover {
+            background: #232b52;
+        }
+
+        /* ===================== PAGE TITLE BAR ===================== */
+        .page-titlebar {
+            background: var(--title-bar-bg);
+            color: var(--title-bar-text);
+            padding: 18px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .page-titlebar h1 {
+            margin: 0;
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+
+        .titlebar-meta {
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+            font-size: 12.5px;
+        }
+
+        .titlebar-meta span {
+            opacity: .65;
+        }
+
+        .titlebar-meta b {
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        .titlebar-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===================== LAYOUT ===================== */
+        .page-body {
+            padding: 24px 28px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===================== BUTTONS ===================== */
+        .btn {
+            border: none;
+            border-radius: 9px;
+            padding: 10px 16px;
+            font-size: 13.5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform .1s, opacity .15s;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-dark {
+            background: var(--accent-navy);
+            color: var(--bg-soft);
+        }
+
+        html[data-theme="dark"] .btn-dark {
+            color: #141a2e;
+        }
+
+        .btn-gold {
+            background: var(--accent-gold);
+            color: #3a2c05;
+        }
+
+        .btn-gold:hover {
+            background: var(--accent-gold-dark);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--input-border);
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-sm {
+            padding: 7px 12px;
+            font-size: 12.5px;
+        }
+
+        .btn-green {
+            background: #1f9d55;
+            color: #fff;
+        }
+
+        /* ===================== CARD ===================== */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            margin: 0 0 4px;
+            font-size: 14.5px;
+            font-weight: 700;
+        }
+
+        .card .sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0 0 12px;
+        }
+
+        /* ===================== GRIDS ===================== */
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-5 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        @media(max-width:1000px) {
+            .grid-5 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width:640px) {
+
+            .grid-2,
+            .grid-3,
+            .grid-5 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===================== STAT CARDS (dashboard) ===================== */
+        .stat-card {
+            padding: 16px 18px;
+        }
+
+        .stat-card .val {
+            font-size: 19px;
+            font-weight: 800;
+            font-family: var(--font-mono);
+        }
+
+        .stat-card .label {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .pos {
+            color: var(--green);
+        }
+
+        .neg {
+            color: var(--red);
+        }
+
+        /* ===================== FORM ===================== */
+        label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        input[type=text],
+        input[type=email],
+        input[type=password],
+        input[type=number],
+        input[type=date],
+        input[type=time],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 9px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 13.5px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-faint);
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .checkbox-row input {
+            accent-color: var(--accent-gold-dark);
+            width: 15px;
+            height: 15px;
+        }
+
+        /* ===================== TABLE ===================== */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--text-muted);
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--card-border);
+            font-weight: 700;
+        }
+
+        td {
+            padding: 10px 10px;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .amount-pos {
+            color: var(--green);
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        .amount-neg {
+            color: var(--red);
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        /* ===================== BADGE ===================== */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10.5px;
+            font-weight: 700;
+        }
+
+        .badge-blue {
+            background: #dbe6ff;
+            color: #1d4ed8;
+        }
+
+        .badge-red {
+            background: #fde2e2;
+            color: #b91c1c;
+        }
+
+        .badge-orange {
+            background: #ffe3c4;
+            color: #b45309;
+        }
+
+        .badge-green {
+            background: #d7f5df;
+            color: #15803d;
+        }
+
+        html[data-theme="dark"] .badge-blue {
+            background: #1c2c5c;
+            color: #8fb0ff;
+        }
+
+        html[data-theme="dark"] .badge-red {
+            background: #4a1f27;
+            color: #ff9797;
+        }
+
+        html[data-theme="dark"] .badge-orange {
+            background: #4a3313;
+            color: #ffc27a;
+        }
+
+        html[data-theme="dark"] .badge-green {
+            background: #153826;
+            color: #7be3a0;
+        }
+
+        /* ===================== PROGRESS ===================== */
+        .progress-track {
+            height: 7px;
+            border-radius: 6px;
+            background: var(--input-border);
+            overflow: hidden;
+            margin: 6px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-navy);
+            border-radius: 6px;
+        }
+
+        .progress-row {
+            margin-bottom: 14px;
+        }
+
+        .progress-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .progress-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .progress-bottom {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        /* ===================== ACCOUNT / GOAL CARDS ===================== */
+        .acc-card {
+            padding: 18px;
+        }
+
+        .acc-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .acc-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .acc-actions {
+            display: flex;
+            gap: 8px;
+            color: var(--text-faint);
+        }
+
+        .acc-name {
+            font-weight: 700;
+            font-size: 14.5px;
+        }
+
+        .acc-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .tag {
+            font-size: 10.5px;
+            padding: 2px 7px;
+            border-radius: 5px;
+            background: var(--bg-soft);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        html[data-theme="dark"] .tag {
+            background: #232c56;
+            color: #b7bde8;
+        }
+
+        .acc-balance-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        .acc-balance {
+            font-size: 19px;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            margin-top: 2px;
+        }
+
+        .goal-card {
+            padding: 18px;
+        }
+
+        .goal-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .goal-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .goal-target {
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        .goal-nums {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .goal-add {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .goal-add input {
+            flex: 1;
+        }
+
+        /* ===================== CATEGORY CARD ===================== */
+        .cat-card {
+            padding: 16px;
+        }
+
+        .cat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .cat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 11px;
+        }
+
+        .cat-name {
+            font-weight: 700;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .cat-type {
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        .cat-type.income {
+            color: var(--green);
+        }
+
+        .cat-type.expense {
+            color: var(--red);
+        }
+
+        .cat-subs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        /* ===================== FILTER BAR ===================== */
+        .filter-bar {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: end;
+        }
+
+        .filter-bar .field {
+            margin-bottom: 0;
+        }
+
+        .filter-bar .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        @media(max-width:1100px) {
+            .filter-bar {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media(max-width:640px) {
+            .filter-bar {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* ===================== CHART PLACEHOLDER ===================== */
+        .chart-box {
+            height: 200px;
+            position: relative;
+        }
+
+        .chart-empty {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-faint);
+            font-size: 12.5px;
+        }
+
+        .bars-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 100%;
+            padding-top: 10px;
+        }
+
+        .bars-chart .bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            gap: 2px;
+        }
+
+        .bars-chart .bar-pair {
+            display: flex;
+            gap: 2px;
+            align-items: flex-end;
+            height: 100%;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .bars-chart .bar {
+            width: 8px;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .bar-income {
+            background: var(--green);
+        }
+
+        .bar-expense {
+            background: var(--red);
+        }
+
+        .bars-chart .bar-label {
+            font-size: 9.5px;
+            color: var(--text-faint);
+            margin-top: 4px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 14px;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            align-items: center;
+        }
+
+        .legend-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 2px;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        /* ===================== SECTION SPACING ===================== */
+        .stack>*+* {
+            margin-top: 18px;
+        }
+
+        /* ===================== AUTH PAGES ===================== */
+        .auth-shell {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 16px;
+            background: var(--bg);
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 380px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .auth-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
+
+        .auth-logo svg {
+            width: 46px;
+            height: 46px;
+        }
+
+        .auth-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            font-size: 12.5px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .copyright {
+            text-align: center;
+            font-size: 11.5px;
+            color: var(--text-faint);
+            margin-top: 22px;
+        }
+
+        .auth-topbar {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+        }
+
+        /* ===================== LANDING PAGE ===================== */
+        .landing-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .landing-header .cta-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .landing-header .brand {
+            font-size: 18px;
+        }
+
+        .landing-header .brand .brand-name {
+            display: inline;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: var(--bg-soft);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            margin-bottom: 22px;
+        }
+
+        html[data-theme="dark"] .eyebrow {
+            background: #141a34;
+        }
+
+        .eyebrow .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        .hero h1 {
+            font-size: 44px;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin: 0 0 18px;
+        }
+
+        .hero h1 .grad {
+            background: linear-gradient(90deg, var(--accent-gold-dark), #8b6fd1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 15.5px;
+            color: var(--text-muted);
+            max-width: 560px;
+            margin: 0 auto 28px;
+            line-height: 1.6;
+        }
+
+        .hero .cta-group {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .features-head {
+            text-align: center;
+            padding: 50px 20px 10px;
+        }
+
+        .features-head h2 {
+            font-size: 26px;
+            font-weight: 800;
+            margin: 0 0 6px;
+            letter-spacing: -0.02em;
+        }
+
+        .features-head p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .features-grid {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        @media(max-width:800px) {
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media(max-width:520px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feature-card {
+            padding: 22px;
+        }
+
+        .feature-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--bg-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            color: var(--accent-gold-dark);
+        }
+
+        html[data-theme="dark"] .feature-icon {
+            background: #1b2348;
+        }
+
+        .feature-card h3 {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .feature-card p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        .cta-panel {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 44px 30px;
+            text-align: center;
+            border-radius: 18px;
+        }
+
+        .cta-panel h2 {
+            font-size: 24px;
+            margin: 0 0 8px;
+            font-weight: 800;
+        }
+
+        .cta-panel p {
+            color: var(--text-muted);
+            font-size: 13.5px;
+            margin: 0 0 22px;
+        }
+
+        .landing-footer {
+            text-align: center;
+            padding: 26px 20px;
+            font-size: 12px;
+            color: var(--text-faint);
+            border-top: 1px solid var(--card-border);
+        }
+
+        .landing-footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        /* ===================== APP SHELL VISIBILITY ===================== */
+        #auth-view.hidden,
+        #app-view.hidden {
+            display: none;
+        }
+
+        .app-page {
+            display: none;
+        }
+
+        .app-page.active {
+            display: block;
+        }
+
+        /* Currency helper */
+        .currency-note {
+            font-size: 11px;
+            color: var(--text-faint);
+            margin-top: 4px;
+        }
+
+        @media(max-width:900px) {
+            .app-nav {
+                display: none;
+            }
+
+            .page-titlebar h1 {
+                font-size: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================ -->
+    <!-- LOGO SVG (reused) -->
+    <!-- ============================================================ -->
+    <template id="logo-svg">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M32 6L14 22H26L16 42L38 20H24L32 6Z" fill="url(#lg)" />
+            <defs>
+                <linearGradient id="lg" x1="14" y1="6" x2="38" y2="42" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#2e2c8f" />
+                    <stop offset="1" stop-color="#5a3fc0" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- AUTH VIEW -->
+    <!-- ============================================================ -->
+    <div id="auth-view">
+
+        <button class="icon-btn auth-topbar" onclick="toggleTheme()" id="theme-btn-auth"
+            aria-label="Ganti tema">🌙</button>
+
+        <!-- LANDING -->
+        <div class="auth-page" id="page-landing">
+            <header class="landing-header">
+                <div class="brand"><span class="logo-slot"></span><span class="brand-name">Financia</span></div>
+                <div class="cta-group">
+                    <a href="#" class="btn btn-ghost btn-sm" onclick="showAuth('login');return false;">Sign in</a>
+                    <a href="#" class="btn btn-gold btn-sm" onclick="showAuth('register');return false;">Get started</a>
+                </div>
+            </header>
+
+            <section class="hero">
+                <span class="eyebrow"><span class="dot"></span> Your finances, under control</span>
+                <h1>Take control of your <span class="grad">financial future</span></h1>
+                <p>Track expenses, manage budgets, set savings goals, and gain insights into your spending habits — all
+                    in one place.</p>
+                <div class="cta-group">
+                    <a href="#" class="btn btn-gold" onclick="showAuth('register');return false;">Start for free</a>
+                    <a href="#" class="btn btn-dark" onclick="showAuth('login');return false;">Sign in</a>
+                </div>
+            </section>
+
+            <div class="features-head">
+                <h2>Everything you need</h2>
+                <p>Powerful tools to help you manage your personal finances with ease.</p>
+            </div>
+            <div class="features-grid">
+                <div class="card feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Multi-Account Tracking</h3>
+                    <p>Manage multiple accounts — checking, savings, credit cards — all in one dashboard with real-time
+                        balance updates.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Budget Management</h3>
+                    <p>Set monthly budgets by category, track progress in real-time, and get visual alerts when you're
+                        approaching your limits.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Reports &amp; Insights</h3>
+                    <p>Visualize your income and expenses with interactive charts. Export reports as CSV or PDF for
+                        deeper analysis.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">🔻</div>
+                    <h3>Expense Tracking</h3>
+                    <p>Log transactions quickly with categorized entries. Filter, search, and review your spending
+                        history at a glance.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Savings Goals</h3>
+                    <p>Set and track financial goals. Monitor your progress with visual indicators and stay motivated to
+                        reach your targets.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon">🔁</div>
+                    <h3>Internal Transfers</h3>
+                    <p>Move money between accounts seamlessly. Mark transfers as savings to track them as expenses for
+                        better budgeting.</p>
+                </div>
+            </div>
+
+            <div class="card cta-panel">
+                <h2>Ready to take control?</h2>
+                <p>Join Financia today and start managing your finances the smart way. It's free to get started.</p>
+                <a href="#" class="btn btn-gold" onclick="showAuth('register');return false;">Create your free
+                    account</a>
+            </div>
+
+            <footer class="landing-footer">
+                <div class="brand" style="justify-content:center;display:flex;"><span class="logo-slot"
+                        style="transform:scale(0.7)"></span> © 2026 Financia. All rights reserved.</div>
+                <div class="links"><a href="#" onclick="showAuth('login');return false;">Sign in</a><a href="#"
+                        onclick="showAuth('register');return false;">Register</a></div>
+            </footer>
+        </div>
+
+        <!-- LOGIN -->
+        <div class="auth-page hidden" id="page-login">
+            <div class="auth-shell">
+                <div class="auth-card">
+                    <div class="auth-logo logo-slot-lg"></div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" placeholder="you@example.com">
+                    </div>
+                    <div class="field">
+                        <label>Password</label>
+                        <input type="password" placeholder="••••••••">
+                    </div>
+                    <div class="auth-foot">
+                        <label class="checkbox-row" style="margin-bottom:0;font-weight:500;"><input type="checkbox">
+                            Remember me</label>
+                        <a href="#" style="text-decoration:underline;color:var(--text-muted);">Forgot your password?</a>
+                    </div>
+                    <div class="auth-foot" style="margin-top:18px;">
+                        <a href="#" style="text-decoration:underline;" onclick="showAuth('register');return false;">Need
+                            an account?</a>
+                        <button class="btn btn-dark" onclick="enterApp()">Log in</button>
+                    </div>
+                </div>
+                <div class="copyright" style="position:fixed;bottom:20px;left:0;right:0;">© 2026 Financia. All rights
+                    reserved.</div>
+            </div>
+        </div>
+
+        <!-- REGISTER -->
+        <div class="auth-page hidden" id="page-register">
+            <div class="auth-shell">
+                <div class="auth-card">
+                    <div class="auth-logo logo-slot-lg"></div>
+                    <div class="field"><label>Name</label><input type="text" placeholder="Degia Pasaribu"></div>
+                    <div class="field"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+                    <div class="field"><label>Password</label><input type="password" placeholder="••••••••"></div>
+                    <div class="field"><label>Confirm Password</label><input type="password" placeholder="••••••••">
+                    </div>
+                    <div class="field">
+                        <label>Preferred Currency</label>
+                        <select>
+                            <option>IDR - Indonesian Rupiah</option>
+                            <option>USD - US Dollar</option>
+                            <option>SGD - Singapore Dollar</option>
+                        </select>
+                    </div>
+                    <div class="auth-foot">
+                        <a href="#" style="text-decoration:underline;" onclick="showAuth('login');return false;">Already
+                            registered?</a>
+                        <button class="btn btn-dark" onclick="enterApp()">Register</button>
+                    </div>
+                </div>
+                <div class="copyright" style="position:fixed;bottom:20px;left:0;right:0;">© 2026 Financia. All rights
+                    reserved.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- APP VIEW -->
+    <!-- ============================================================ -->
+    <div id="app-view" class="hidden">
+
+        <header class="app-header">
+            <div class="brand"><span class="logo-slot"></span></div>
+            <nav class="app-nav" id="app-nav">
+                <a data-page="dashboard" class="active">Dashboard</a>
+                <a data-page="accounts">Accounts</a>
+                <a data-page="transactions">Transactions</a>
+                <a data-page="transfer">Transfer</a>
+                <a data-page="categories">Categories</a>
+                <a data-page="budgets">Budgets</a>
+                <a data-page="goals">Goals</a>
+                <a data-page="loans">Loans</a>
+                <a data-page="reports">Reports</a>
+            </nav>
+            <div class="header-right">
+                <button class="icon-btn" onclick="toggleTheme()" id="theme-btn-app" aria-label="Ganti tema">🌙</button>
+                <div class="user-menu">
+                    <button class="user-pill" onclick="toggleUserMenu()">Demo User ▾</button>
+                    <div class="user-dropdown hidden" id="user-dropdown">
+                        <a href="#" onclick="goPage('settings');closeUserMenu();return false;">Settings</a>
+                        <a href="#" onclick="goPage('profile');closeUserMenu();return false;">Profile</a>
+                        <button onclick="exitApp()">Log Out</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===================== DASHBOARD ===================== -->
+        <section class="app-page active" id="page-dashboard">
+            <div class="page-titlebar">
+                <h1>Dashboard</h1>
+                <div class="titlebar-meta">
+                    <span>Real Balance<b>Rp 87.390.000</b></span>
+                    <span>Today Income<b class="pos">+0,00</b></span>
+                    <span>Today Expense<b class="neg">-0,00</b></span>
+                </div>
+                <div class="titlebar-actions">
+                    <select class="btn-sm"
+                        style="border:1px solid var(--input-border);border-radius:9px;background:var(--input-bg);color:var(--text);padding:8px 10px;">
+                        <option>July</option>
+                    </select>
+                    <select class="btn-sm"
+                        style="border:1px solid var(--input-border);border-radius:9px;background:var(--input-bg);color:var(--text);padding:8px 10px;">
+                        <option>2026</option>
+                    </select>
+                    <button class="btn btn-dark btn-sm">Apply</button>
+                </div>
+            </div>
+
+            <div class="page-body stack">
+                <div class="grid grid-5">
+                    <div class="card stat-card">
+                        <div class="val neg">-Rp 12.000.000</div>
+                        <div class="label">Savings Account</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="val pos">+Rp 0</div>
+                        <div class="label">Income (LU) this month</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="val neg">-Rp 0</div>
+                        <div class="label">Expense (LU) this month</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="val" style="color:#7c5fd6;">Rp 24.000.000</div>
+                        <div class="label">Saved this month</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="val pos">+Rp 0</div>
+                        <div class="label">Net Savings</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3>Income vs Expense (2026)</h3>
+                        <div class="legend" style="margin-bottom:8px;"><span><span class="legend-dot"
+                                    style="background:var(--green)"></span>Income</span><span><span class="legend-dot"
+                                    style="background:var(--red)"></span>Expense</span></div>
+                        <div class="chart-box">
+                            <div class="bars-chart" id="income-expense-chart"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Expense by Category (Jul 2026)</h3>
+                        <p class="sub">Filter Categories ▾</p>
+                        <div class="chart-box">
+                            <div class="chart-empty">No data for the selected filters.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Daily Income vs Expense (July 2026)</h3>
+                    <div class="legend"><span><span class="legend-dot"
+                                style="background:var(--green)"></span>Income</span><span><span class="legend-dot"
+                                style="background:var(--red)"></span>Expense</span></div>
+                    <div class="chart-box">
+                        <div class="chart-empty">Belum ada transaksi bulan ini.</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="display:flex;justify-content:space-between;">Daily Breakdown <span
+                            style="font-size:12px;font-weight:600;color:var(--text-muted);">Total Income <span
+                                class="pos">+0.00</span> &nbsp; Total Expense <span class="neg">-0.00</span></span></h3>
+                    <div class="table-wrap" style="max-height:260px;overflow-y:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Income</th>
+                                    <th>Expense</th>
+                                    <th>Net</th>
+                                </tr>
+                            </thead>
+                            <tbody id="daily-breakdown-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Budget Progress</h3>
+                    <div class="progress-row" data-spent="0" data-budget="3000000">
+                        <div class="progress-top"><span>Food &amp; Drinks</span><span>0 / 3.000.000 (0%)</span></div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-top"><span>Transportation</span><span>0 / 2.000.000 (0%)</span></div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-top"><span>Bills &amp; Utilities</span><span>0 / 8.000.000 (0%)</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-top"><span>Shopping</span><span>0 / 2.000.000 (0%)</span></div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-top"><span>Entertainment</span><span>0 / 1.500.000 (0%)</span></div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-top"><span>Health</span><span>0 / 1.000.000 (0%)</span></div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress-top"><span>Education</span><span>0 / 2.000.000 (0%)</span></div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="display:flex;justify-content:space-between;">Recent Transactions <a href="#"
+                            onclick="goPage('transactions');return false;"
+                            style="font-size:12.5px;font-weight:600;color:var(--accent-blue);">View All</a></h3>
+                    <div class="table-wrap" id="recent-tx"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== ACCOUNTS ===================== -->
+        <section class="app-page" id="page-accounts">
+            <div class="page-titlebar">
+                <h1>Accounts</h1>
+                <button class="btn btn-gold">+ New Account</button>
+            </div>
+            <div class="page-body">
+                <div style="text-align:right;margin-bottom:12px;"><a href="#"
+                        style="font-size:12.5px;text-decoration:underline;color:var(--text-muted);">Reconcile
+                        Balances</a></div>
+                <div class="grid grid-3" id="accounts-grid"></div>
+            </div>
+        </section>
+
+        <!-- ===================== TRANSACTIONS ===================== -->
+        <section class="app-page" id="page-transactions">
+            <div class="page-titlebar">
+                <h1>Transactions</h1>
+                <button class="btn btn-gold">+ Add Transaction</button>
+            </div>
+            <div class="page-body">
+                <div class="card" style="margin-bottom:18px;">
+                    <div class="filter-bar">
+                        <div class="field"><label>From</label><input type="date"></div>
+                        <div class="field"><label>To</label><input type="date"></div>
+                        <div class="field"><label>Type</label><select>
+                                <option>All</option>
+                                <option>Income</option>
+                                <option>Expense</option>
+                            </select></div>
+                        <div class="field"><label>Account</label><select>
+                                <option>All Accounts</option>
+                            </select></div>
+                        <div class="field"><label>Category</label><select>
+                                <option>All Categories</option>
+                            </select></div>
+                        <div class="field"><label>Search</label><input type="text" placeholder="Description..."></div>
+                    </div>
+                    <div
+                        style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:14px;flex-wrap:wrap;gap:10px;">
+                        <div class="field" style="margin-bottom:0;min-width:160px;"><label>Recurring</label><select>
+                                <option>All</option>
+                                <option>Yes</option>
+                                <option>No</option>
+                            </select></div>
+                        <div class="actions"><button class="btn btn-dark btn-sm">Filter</button><button
+                                class="btn btn-outline btn-sm">Clear</button></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Sub</th>
+                                    <th>Account</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tx-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div
+                        style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:12.5px;color:var(--text-muted);flex-wrap:wrap;gap:10px;">
+                        <span>Showing 1 to 15 of 121 results</span>
+                        <div style="display:flex;gap:4px;">
+                            <button class="btn btn-outline btn-sm">‹</button>
+                            <button class="btn btn-dark btn-sm">1</button>
+                            <button class="btn btn-outline btn-sm">2</button>
+                            <button class="btn btn-outline btn-sm">3</button>
+                            <button class="btn btn-outline btn-sm">…</button>
+                            <button class="btn btn-outline btn-sm">9</button>
+                            <button class="btn btn-outline btn-sm">›</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== TRANSFER ===================== -->
+        <section class="app-page" id="page-transfer">
+            <div class="page-titlebar">
+                <h1>Internal Transfer</h1>
+            </div>
+            <div class="page-body" style="max-width:480px;">
+                <div class="card">
+                    <div class="field"><label>From Account</label><select>
+                            <option>Select source account...</option>
+                            <option>Cash</option>
+                            <option>BCA Checking</option>
+                            <option>GoPay</option>
+                        </select></div>
+                    <div class="field"><label>To Account</label><select>
+                            <option>Select destination account...</option>
+                            <option>Emergency Fund</option>
+                            <option>Mandiri Savings</option>
+                        </select></div>
+                    <div class="field"><label>Amount</label><input type="number" placeholder="0.00"></div>
+                    <div class="field"><label>Description (optional)</label><input type="text"
+                            placeholder="e.g. Monthly savings"></div>
+                    <div class="field"><label>Date</label><input type="date" value="2026-07-05"></div>
+                    <div class="field checkbox-row"><input type="checkbox" id="cb-savings"><label for="cb-savings"
+                            style="margin:0;font-weight:500;">Treat as savings expense<br><span class="currency-note"
+                                style="margin-top:2px;">This transfer will be recorded as an expense for budgeting
+                                purposes.</span></label></div>
+                    <div style="display:flex;gap:10px;"><button class="btn btn-gold">Transfer</button><button
+                            class="btn btn-ghost">Cancel</button></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== CATEGORIES ===================== -->
+        <section class="app-page" id="page-categories">
+            <div class="page-titlebar">
+                <h1>Categories</h1><button class="btn btn-gold">+ New Category</button>
+            </div>
+            <div class="page-body">
+                <div class="grid grid-3" id="categories-grid"></div>
+            </div>
+        </section>
+
+        <!-- ===================== BUDGETS ===================== -->
+        <section class="app-page" id="page-budgets">
+            <div class="page-titlebar">
+                <h1>Budgets</h1><button class="btn btn-gold">+ New Budget</button>
+            </div>
+            <div class="page-body stack">
+                <div class="card" style="display:flex;gap:14px;align-items:end;flex-wrap:wrap;">
+                    <div class="field" style="margin-bottom:0;"><label>Month</label><select>
+                            <option>July</option>
+                        </select></div>
+                    <div class="field" style="margin-bottom:0;"><label>Year</label><select>
+                            <option>2026</option>
+                        </select></div>
+                    <button class="btn btn-dark">View</button>
+                </div>
+                <div class="stack" id="budgets-list"></div>
+            </div>
+        </section>
+
+        <!-- ===================== GOALS ===================== -->
+        <section class="app-page" id="page-goals">
+            <div class="page-titlebar">
+                <h1>Goals</h1><button class="btn btn-gold">+ New Goal</button>
+            </div>
+            <div class="page-body">
+                <div class="grid grid-3" id="goals-grid"></div>
+            </div>
+        </section>
+
+        <!-- ===================== LOANS ===================== -->
+        <section class="app-page" id="page-loans">
+            <div class="page-titlebar">
+                <h1>Loans</h1><button class="btn btn-gold">+ New Loan</button>
+            </div>
+            <div class="page-body stack">
+                <div class="grid grid-3">
+                    <div class="card stat-card" style="border-left:3px solid var(--red);">
+                        <div class="val neg">Rp 264.780.000</div>
+                        <div class="label">Total Borrowed</div>
+                    </div>
+                    <div class="card stat-card" style="border-left:3px solid var(--green);">
+                        <div class="val pos">Rp 12.000.000</div>
+                        <div class="label">Total Lent</div>
+                    </div>
+                    <div class="card stat-card" style="border-left:3px solid var(--accent-blue);">
+                        <div class="val" style="color:var(--accent-blue);">2</div>
+                        <div class="label">Active Loans</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Lender</th>
+                                    <th>Amount</th>
+                                    <th>Remaining</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Car Loan - Honda Civic</td>
+                                    <td><span class="badge badge-red">Borrow</span></td>
+                                    <td>Bank Mandiri</td>
+                                    <td class="mono">300.000.000</td>
+                                    <td class="mono" style="font-weight:700;">264.780.000</td>
+                                    <td><span class="badge badge-blue">Active</span></td>
+                                    <td>👁 ✎ 🗑</td>
+                                </tr>
+                                <tr>
+                                    <td>Loan to Budi</td>
+                                    <td><span class="badge badge-green">Lend</span></td>
+                                    <td>Budi Santoso</td>
+                                    <td class="mono">15.000.000</td>
+                                    <td class="mono" style="font-weight:700;">12.000.000</td>
+                                    <td><span class="badge badge-blue">Active</span></td>
+                                    <td>👁 ✎ 🗑</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== REPORTS ===================== -->
+        <section class="app-page" id="page-reports">
+            <div class="page-titlebar">
+                <h1>Reports</h1>
+            </div>
+            <div class="page-body stack">
+                <div class="card">
+                    <div class="filter-bar" style="grid-template-columns:repeat(5,1fr);">
+                        <div class="field"><label>From</label><input type="date" value="2026-07-01"></div>
+                        <div class="field"><label>To</label><input type="date" value="2026-07-05"></div>
+                        <div class="field"><label>Type</label><select>
+                                <option>All</option>
+                            </select></div>
+                        <div class="field"><label>Account</label><select>
+                                <option>All</option>
+                            </select></div>
+                        <div class="field"><label>Category</label><select>
+                                <option>All</option>
+                            </select></div>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:14px;">
+                        <button class="btn btn-dark btn-sm">Generate</button>
+                        <button class="btn btn-green btn-sm">CSV</button>
+                        <button class="btn btn-danger btn-sm">PDF</button>
+                    </div>
+                </div>
+                <div class="grid grid-3">
+                    <div class="card stat-card">
+                        <div class="val pos">+0.00</div>
+                        <div class="label">Total Income</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="val neg">-0.00</div>
+                        <div class="label">Total Expense</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="val pos">+0.00</div>
+                        <div class="label">Net</div>
+                    </div>
+                </div>
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3>Expense by Category</h3>
+                        <p class="sub" style="margin-top:20px;">No expenses in this period.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Income by Category</h3>
+                        <p class="sub" style="margin-top:20px;">No income in this period.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Transaction Details</h3>
+                    <p class="sub" style="text-align:center;margin-top:24px;">No transactions found.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SETTINGS ===================== -->
+        <section class="app-page" id="page-settings">
+            <div class="page-titlebar">
+                <h1>Settings</h1>
+            </div>
+            <div class="page-body" style="max-width:640px;">
+                <div class="stack">
+                    <div class="card">
+                        <h3>General</h3>
+                        <div class="field" style="margin-top:14px;"><label>Default Currency</label><select>
+                                <option>IDR</option>
+                                <option>USD</option>
+                            </select></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Navigation Menu</h3>
+                        <p class="sub">Show or hide menu items from the navigation bar.</p>
+                        <div class="grid grid-2" style="gap:10px;">
+                            <label class="checkbox-row"><input type="checkbox" checked> Dashboard</label>
+                            <label class="checkbox-row"><input type="checkbox" checked> Accounts</label>
+                            <label class="checkbox-row"><input type="checkbox" checked> Transactions</label>
+                            <label class="checkbox-row"><input type="checkbox" checked> Transfer</label>
+                            <label class="checkbox-row"><input type="checkbox" checked> Categories</label>
+                            <label class="checkbox-row"><input type="checkbox" checked> Budgets</label>
+                            <label class="checkbox-row"><input type="checkbox" checked> Goals</label>
+                            <label class="checkbox-row"><input type="checkbox" checked> Loans</label>
+                            <label class="checkbox-row"><input type="checkbox" checked> Reports</label>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Defaults</h3>
+                        <div class="field" style="margin-top:14px;"><label>Default Account</label><select>
+                                <option>BCA Checking</option>
+                            </select>
+                            <p class="currency-note">Pre-selected when creating new transactions</p>
+                        </div>
+                        <div class="field"><label>Default Income Category</label><select>
+                                <option>-- No default --</option>
+                            </select></div>
+                        <div class="field"><label>Default Expense Category</label><select>
+                                <option>-- No default --</option>
+                            </select></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>WhatsApp Daily Report</h3>
+                        <p class="sub">Kirim laporan keuangan harian otomatis ke WhatsApp via Fonnte.</p>
+                        <div class="grid grid-2">
+                            <div class="field"><label>Fonnte Token</label><input type="text"
+                                    placeholder="Masukkan token dari fonnte.com"></div>
+                            <div class="field"><label>WhatsApp Number</label><input type="text" placeholder="62812xxxx">
+                                <p class="currency-note">Kode negara 62. Contoh: 628123456789</p>
+                            </div>
+                        </div>
+                        <div class="field"><label>Send Time</label><input type="time" value="07:00"
+                                style="max-width:160px;">
+                            <p class="currency-note">Laporan akan dikirim otomatis setiap hari pada jam ini.</p>
+                        </div>
+                        <div class="field">
+                            <label>Report Sections</label>
+                            <div class="grid grid-3" style="gap:8px;">
+                                <label class="checkbox-row"><input type="checkbox" checked> Pemasukan</label>
+                                <label class="checkbox-row"><input type="checkbox" checked> Pengeluaran</label>
+                                <label class="checkbox-row"><input type="checkbox" checked> Rincian Kategori</label>
+                                <label class="checkbox-row"><input type="checkbox" checked> Net / Selisih</label>
+                                <label class="checkbox-row"><input type="checkbox" checked> Saldo Akun</label>
+                            </div>
+                        </div>
+                        <div class="field"><label>Custom Header (optional)</label><textarea
+                                placeholder="Contoh: Selamat pagi! Berikut laporan keuangan hari ini..."></textarea>
+                        </div>
+                        <div class="field"><label>Custom Footer (optional)</label><textarea
+                                placeholder="Contoh: Jangan lupa catat pengeluaran hari ini ya!"></textarea></div>
+                    </div>
+
+                    <button class="btn btn-dark">Save Settings</button>
+
+                    <div class="card">
+                        <h3>Institutions Management</h3>
+                        <p class="sub">Manage bank, e-wallet, and other financial institution brands and logos.</p>
+                        <button class="btn btn-gold btn-sm">Manage Institutions</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== PROFILE ===================== -->
+        <section class="app-page" id="page-profile">
+            <div class="page-titlebar">
+                <h1>Profile</h1>
+            </div>
+            <div class="page-body" style="max-width:600px;">
+                <div class="stack">
+                    <div class="card">
+                        <h3>Profile Information</h3>
+                        <p class="sub">Update your account's profile information and email address.</p>
+                        <div class="field"><label>Name</label><input type="text" value="Demo User"></div>
+                        <div class="field"><label>Currency</label><select>
+                                <option>IDR - Indonesian Rupiah</option>
+                            </select></div>
+                        <div class="field"><label>Email</label><input type="email" value="demo@financia.com"></div>
+                        <button class="btn btn-dark">Save</button>
+                    </div>
+                    <div class="card">
+                        <h3>Update Password</h3>
+                        <p class="sub">Ensure your account is using a long, random password to stay secure.</p>
+                        <div class="field"><label>Current Password</label><input type="password"></div>
+                        <div class="field"><label>New Password</label><input type="password"></div>
+                        <div class="field"><label>Confirm Password</label><input type="password"></div>
+                        <button class="btn btn-dark">Save</button>
+                    </div>
+                    <div class="card">
+                        <h3>Delete Account</h3>
+                        <p class="sub">Once your account is deleted, all of its resources and data will be permanently
+                            deleted. Before deleting your account, please download any data or information that you wish
+                            to retain.</p>
+                        <button class="btn btn-danger">Delete Account</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        /* ===================== LOGO INJECTION ===================== */
+        document.querySelectorAll('.logo-slot').forEach(el => {
+            el.innerHTML = document.getElementById('logo-svg').innerHTML;
+        });
+        document.querySelectorAll('.logo-slot-lg').forEach(el => {
+            el.innerHTML = document.getElementById('logo-svg').innerHTML;
+        });
+
+        /* ===================== THEME ===================== */
+        let theme = 'light';
+        function toggleTheme() {
+            theme = theme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            const icon = theme === 'light' ? '🌙' : '☀️';
+            document.getElementById('theme-btn-auth').textContent = icon;
+            document.getElementById('theme-btn-app').textContent = icon;
+        }
+
+        /* ===================== AUTH NAV ===================== */
+        function showAuth(id) {
+            document.querySelectorAll('.auth-page').forEach(p => p.classList.add('hidden'));
+            document.getElementById('page-' + id).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+        function enterApp() {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+        function exitApp() {
+            document.getElementById('app-view').classList.add('hidden');
+            document.getElementById('auth-view').classList.remove('hidden');
+            showAuth('landing');
+            closeUserMenu();
+        }
+
+        /* ===================== USER MENU ===================== */
+        function toggleUserMenu() { document.getElementById('user-dropdown').classList.toggle('hidden'); }
+        function closeUserMenu() { document.getElementById('user-dropdown').classList.add('hidden'); }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) closeUserMenu();
+        });
+
+        /* ===================== APP NAV ===================== */
+        function goPage(id) {
+            document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + id).classList.add('active');
+            document.querySelectorAll('#app-nav a').forEach(a => a.classList.toggle('active', a.dataset.page === id));
+            window.scrollTo(0, 0);
+        }
+        document.querySelectorAll('#app-nav a').forEach(a => {
+            a.addEventListener('click', () => goPage(a.dataset.page));
+        });
+
+        /* ===================== DATA ===================== */
+        const fmt = n => new Intl.NumberFormat('id-ID').format(Math.abs(n));
+
+        const accounts = [
+            { name: 'GoPay', type: 'E-Wallet', tag: 'Real', balance: -1370000, color: '#0ea5e9', initials: 'Go' },
+            { name: 'BRI Credit Card', type: 'Credit Card', tag: 'Real', balance: -3550000, color: '#1d4ed8', initials: 'BR' },
+            { name: 'Emergency Fund', type: 'Savings', tag: 'Savings', balance: -12000000, color: '#7c3aed', initials: 'Em' },
+            { name: 'Cash', type: 'Cash', tag: 'Real', balance: 1580000, color: '#64748b', initials: 'Ca' },
+            { name: 'BCA Checking', type: 'Bank', tag: 'Real', balance: 39980000, color: '#2563eb', initials: 'BCA' },
+            { name: 'Mandiri Savings', type: 'Bank', tag: 'Real', balance: 50750000, color: '#0f766e', initials: 'Ma' },
+        ];
+        const accGrid = document.getElementById('accounts-grid');
+        accounts.forEach(a => {
+            accGrid.insertAdjacentHTML('beforeend', `
+  <div class="card acc-card">
+    <div class="acc-top">
+      <div class="acc-avatar" style="background:${a.color}">${a.initials}</div>
+      <div class="acc-actions">✎ 🗑</div>
+    </div>
+    <div class="acc-name">${a.name}</div>
+    <div class="acc-tags"><span class="tag">${a.type}</span><span class="tag">${a.tag}</span></div>
+    <div class="acc-balance-label">Current Balance</div>
+    <div class="acc-balance ${a.balance < 0 ? 'neg' : 'pos'}">${a.balance < 0 ? '-' : ''}Rp ${fmt(a.balance)}</div>
+  </div>`);
+        });
+
+        const transactions = [
+            { date: '28 Jun 2026', desc: 'Monthly Savings - Month 6', tag: 'Monthly', cat: 'Savings', catColor: 'badge-blue', sub: 'Emergency Fund', acc: 'Emergency Fund', amt: -2000000 },
+            { date: '25 Jun 2026', desc: 'Monthly Salary', tag: 'Monthly', cat: 'Salary', catColor: 'badge-green', sub: 'Base Salary', acc: 'BCA Checking', amt: 15500000 },
+            { date: '21 Jun 2026', desc: 'Fuel - Shell', tag: null, cat: 'Transportation', catColor: 'badge-orange', sub: 'Fuel', acc: 'GoPay', amt: -510000 },
+            { date: '20 Jun 2026', desc: 'Dinner Outing', tag: null, cat: 'Food & Drinks', catColor: 'badge-red', sub: 'Restaurant', acc: 'Cash', amt: -175000 },
+            { date: '15 Jun 2026', desc: 'Partial repayment - Loan to Budi', tag: null, cat: 'Other Income', catColor: 'badge-blue', sub: '-', acc: 'Cash', amt: 1000000 },
+            { date: '14 Jun 2026', desc: 'Groceries - Farmers Market', tag: null, cat: 'Food & Drinks', catColor: 'badge-red', sub: 'Groceries', acc: 'Cash', amt: -220000 },
+            { date: '13 Jun 2026', desc: 'Phone - Telkomsel', tag: 'Monthly', cat: 'Bills & Utilities', catColor: 'badge-orange', sub: 'Phone', acc: 'BCA Checking', amt: -200000 },
+            { date: '12 Jun 2026', desc: 'Internet - Biznet', tag: 'Monthly', cat: 'Bills & Utilities', catColor: 'badge-orange', sub: 'Internet', acc: 'BCA Checking', amt: -500000 },
+            { date: '11 Jun 2026', desc: 'Water - PAM', tag: 'Monthly', cat: 'Bills & Utilities', catColor: 'badge-orange', sub: 'Water', acc: 'BCA Checking', amt: -450000 },
+            { date: '10 Jun 2026', desc: 'Electricity - PLN', tag: 'Monthly', cat: 'Bills & Utilities', catColor: 'badge-orange', sub: 'Electricity', acc: 'BCA Checking', amt: -840000 },
+            { date: '08 Jun 2026', desc: 'Skincare - Sephora', tag: null, cat: 'Shopping', catColor: 'badge-green', sub: 'Personal Care', acc: 'BRI Credit Card', amt: -350000 },
+            { date: '07 Jun 2026', desc: 'Grab to Office', tag: null, cat: 'Transportation', catColor: 'badge-orange', sub: 'Taxi/RideShare', acc: 'GoPay', amt: -55000 },
+            { date: '06 Jun 2026', desc: 'Lunch at Solaria', tag: null, cat: 'Food & Drinks', catColor: 'badge-red', sub: 'Restaurant', acc: 'Cash', amt: -145000 },
+            { date: '05 Jun 2026', desc: 'Monthly installment - Car Loan - Honda Civic', tag: null, cat: 'Bills & Utilities', catColor: 'badge-orange', sub: '-', acc: 'BCA Checking', amt: -5870000 },
+            { date: '05 Jun 2026', desc: 'Movie Ticket', tag: null, cat: 'Entertainment', catColor: 'badge-blue', sub: 'Movies', acc: 'Cash', amt: -120000 },
+        ];
+        function txRow(t, showEdit) {
+            return `<tr>
+    <td>${t.date}</td>
+    <td>${t.desc}${t.tag ? ` <span class="badge badge-blue">${t.tag}</span>` : ''}</td>
+    <td><span class="badge ${t.catColor}">${t.cat}</span></td>
+    <td>${t.sub}</td>
+    <td>${t.acc}</td>
+    <td class="${t.amt < 0 ? 'amount-neg' : 'amount-pos'}">${t.amt < 0 ? '-' : '+'}Rp ${fmt(t.amt)}</td>
+    ${showEdit ? '<td>✎ 🗑</td>' : ''}
+  </tr>`;
+        }
+        document.getElementById('tx-table-body').innerHTML = transactions.map(t => txRow(t, true)).join('');
+        document.getElementById('recent-tx').innerHTML = `<table><tbody>${transactions.slice(0, 6).map(t => `
+  <tr><td>${t.desc}${t.tag ? ` <span class="badge badge-blue">${t.tag}</span>` : ''}<div style="font-size:11px;color:var(--text-muted);">${t.date} · ${t.acc}</div></td>
+  <td style="text-align:right;" class="${t.amt < 0 ? 'amount-neg' : 'amount-pos'}">${t.amt < 0 ? '-' : '+'}Rp ${fmt(t.amt)}</td></tr>
+`).join('')}</tbody></table>`;
+
+        /* Daily breakdown for July (31 days), all zero like screenshot */
+        const dbBody = document.getElementById('daily-breakdown-body');
+        const days = ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue'];
+        let rows = '';
+        for (let d = 1; d <= 31; d++) {
+            rows += `<tr><td>${d} ${days[(d - 1) % 7]}</td><td>-</td><td>-</td><td>-</td></tr>`;
+        }
+        rows += `<tr style="font-weight:700;"><td>Total</td><td class="pos">+0.00</td><td class="neg">-0.00</td><td class="pos">+0.00</td></tr>`;
+        dbBody.innerHTML = rows;
+
+        /* Income vs Expense bar chart (Jan - Jun has data, Jul-Dec empty, matching screenshot) */
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const incomeData = [16, 17, 20, 17, 16, 17, 0, 0, 0, 0, 0, 0];
+        const expenseData = [14, 15, 17, 15, 20, 13, 0, 0, 0, 0, 0, 0];
+        const chartEl = document.getElementById('income-expense-chart');
+        chartEl.innerHTML = months.map((m, i) => `
+  <div class="bar-group">
+    <div class="bar-pair">
+      <div class="bar bar-income" style="height:${incomeData[i] * 4}px"></div>
+      <div class="bar bar-expense" style="height:${expenseData[i] * 4}px"></div>
+    </div>
+    <div class="bar-label">${m}</div>
+  </div>
+`).join('');
+
+        /* Categories */
+        const categories = [
+            { name: 'Salary', type: 'income', color: '#16a34a', subs: ['Allowance', 'Base Salary', 'Bonus', 'Overtime'] },
+            { name: 'Freelance', type: 'income', color: '#0d9488', subs: ['Consulting', 'Design', 'Web Development', 'Writing'] },
+            { name: 'Investment', type: 'income', color: '#6366f1', subs: ['Crypto', 'Dividends', 'Real Estate', 'Stocks'] },
+            { name: 'Other Income', type: 'income', color: '#78716c', subs: [] },
+            { name: 'Transfer', type: 'income', color: '#4f46e5', subs: [] },
+            { name: 'Bills & Utilities', type: 'expense', color: '#d97706', subs: ['Electricity', 'Insurance', 'Internet', 'Phone', 'Rent', 'Water'] },
+            { name: 'Food & Drinks', type: 'expense', color: '#dc2626', subs: ['Coffee & Snacks', 'Delivery', 'Groceries', 'Restaurant'] },
+            { name: 'Transportation', type: 'expense', color: '#ea580c', subs: ['Fuel', 'Maintenance', 'Parking', 'Public Transport', 'Taxi/RideShare'] },
+            { name: 'Shopping', type: 'expense', color: '#16a34a', subs: ['Clothing', 'Electronics', 'Home & Garden', 'Personal Care'] },
+            { name: 'Entertainment', type: 'expense', color: '#2563eb', subs: ['Games', 'Hobbies', 'Movies', 'Streaming', 'Travel'] },
+            { name: 'Health', type: 'expense', color: '#db2777', subs: ['Dental', 'Fitness', 'Medical', 'Pharmacy'] },
+            { name: 'Education', type: 'expense', color: '#7c3aed', subs: ['Books', 'Courses', 'School Fees', 'Tutoring'] },
+            { name: 'Savings', type: 'expense', color: '#9333ea', subs: ['Emergency Fund', 'Goal Savings', 'Retirement', 'Travel Fund'] },
+            { name: 'Other Expense', type: 'expense', color: '#57534e', subs: [] },
+            { name: 'Transfer', type: 'expense', color: '#4338ca', subs: [] },
+        ];
+        document.getElementById('categories-grid').innerHTML = categories.map(c => `
+  <div class="card cat-card">
+    <div class="cat-top">
+      <div>
+        <div class="cat-icon" style="background:${c.color}">${c.name.slice(0, 2)}</div>
+        <div class="cat-name">${c.name}</div>
+        <div class="cat-type ${c.type}">${c.type === 'income' ? 'Income' : 'Expense'}</div>
+      </div>
+      <div class="acc-actions">✎</div>
+    </div>
+    ${c.subs.length ? `<div class="cat-subs">${c.subs.map(s => `<span class="tag">${s}</span>`).join('')}</div>` : ''}
+  </div>
+`).join('');
+
+        /* Budgets */
+        const budgets = [
+            { name: 'Food & Drinks', color: '#dc2626', amount: 3000000 },
+            { name: 'Transportation', color: '#ea580c', amount: 2000000 },
+            { name: 'Bills & Utilities', color: '#d97706', amount: 8000000 },
+            { name: 'Shopping', color: '#16a34a', amount: 2000000 },
+            { name: 'Entertainment', color: '#2563eb', amount: 1500000 },
+            { name: 'Health', color: '#db2777', amount: 1000000 },
+            { name: 'Education', color: '#7c3aed', amount: 2000000 },
+        ];
+        document.getElementById('budgets-list').innerHTML = budgets.map(b => `
+  <div class="card" style="display:flex;align-items:center;gap:16px;">
+    <div class="cat-icon" style="background:${b.color};flex-shrink:0;">${b.name.slice(0, 2)}</div>
+    <div style="flex:1;">
+      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:14px;"><span>${b.name}</span><div class="acc-actions">✎ 🗑</div></div>
+      <div class="sub" style="margin:2px 0 6px;">Budget: Rp ${fmt(b.amount)}</div>
+      <div class="progress-bottom" style="margin-bottom:2px;"><span>0.00 spent</span><span>0%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+      <div class="progress-bottom" style="margin-top:4px;"><span>Rp ${fmt(b.amount)} remaining</span></div>
+    </div>
+  </div>
+`).join('');
+
+        /* Goals */
+        const goals = [
+            { name: 'New MacBook Pro', color: '#4f46e5', target: 25000000, current: 15000000, date: 'Sep 15, 2026' },
+            { name: 'Bali Vacation', color: '#2563eb', target: 15000000, current: 5000000, date: 'Dec 20, 2026' },
+            { name: 'Emergency Fund', color: '#dc2626', target: 100000000, current: 45000000, date: 'Jun 30, 2027' },
+        ];
+        document.getElementById('goals-grid').innerHTML = goals.map(g => {
+            const pct = (g.current / g.target * 100);
+            return `
+  <div class="card goal-card">
+    <div class="goal-head">
+      <div class="goal-icon" style="background:${g.color}">${g.name.slice(0, 1)}</div>
+      <div>
+        <div style="font-weight:700;font-size:14.5px;">${g.name}</div>
+        <div class="goal-target">Target: Rp ${fmt(g.target)}</div>
+      </div>
+      <div class="acc-actions" style="margin-left:auto;">✎ 🗑</div>
+    </div>
+    <div class="goal-nums"><span>Rp ${fmt(g.current)}</span><span>${pct.toFixed(1)}%</span></div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${g.color}"></div></div>
+    <div class="sub" style="margin-top:8px;">Target: ${g.date}</div>
+    <div class="goal-add"><input type="number" placeholder="Amount"><button class="btn btn-dark btn-sm">Add</button></div>
+  </div>`;
+        }).join('');
+    </script>
+</body>
+
+</html>
